@@ -1,54 +1,88 @@
-# React + TypeScript + Vite
+# React Form with TanStack Form and Zod
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern React form implementation using TanStack Form (formerly React Hook Form) and Zod for form validation. This project demonstrates a robust registration form with various input types and validation rules.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Form validation using Zod schema
+- Type-safe form handling with TypeScript
+- Support for various input types:
+  - Text inputs
+  - Email input
+  - Number input
+  - Date input
+  - Checkbox
+  - Select dropdown
+  - Password fields with confirmation
+- Real-time validation
+- Custom error messages
+- Form submission handling
 
-## Expanding the ESLint configuration
+## Technologies Used
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- [React](https://reactjs.org/) - A JavaScript library for building user interfaces
+- [TanStack Form](https://tanstack.com/form/latest) - A form library for React that provides a great developer experience
+- [Zod](https://zod.dev/) - TypeScript-first schema validation library
+- [TypeScript](https://www.typescriptlang.org/) - JavaScript with syntax for types
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+## Getting Started
+
+### Prerequisites
+
+- Node.js (v14 or higher)
+- npm or yarn
+
+### Installation
+
+1. Clone the repository:
+```bash
+git clone git@github.com:t4zo/tanstack-form.git
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+2. Install dependencies:
+```bash
+npm install
+# or
+yarn install
 ```
+
+3. Start the development server:
+```bash
+npm run dev
+# or
+yarn dev
+```
+
+## Form Fields
+
+The registration form includes the following fields:
+
+- Username (required)
+- Email (required, must be valid email format)
+- First Name (required)
+- Last Name (required)
+- Age (required, must be 18 or older)
+- Birthdate (required)
+- Marital Status (checkbox)
+- Nationality (dropdown with options: Canada, US, India, Brazil)
+- Password (required, minimum 8 characters)
+- Confirm Password (must match password)
+
+## Validation Rules
+
+The form implements the following validation rules:
+
+- All required fields must be filled
+- Email must be in a valid format
+- Age must be 18 or older
+- Password must be at least 8 characters long
+- Confirm password must match the password
+- Nationality must be one of the predefined options
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.

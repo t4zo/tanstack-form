@@ -1,4 +1,5 @@
 import { useForm } from '@tanstack/react-form'
+import { z } from 'zod'
 
 type RegisterFormValues = {
     username: string
@@ -12,6 +13,26 @@ type RegisterFormValues = {
     password: string
     confirmPassword: string
 }
+
+const registerSchema = z
+    .object({
+        username: z.string().min(1, 'Username is required'),
+        email: z.string().email('Please enter a valid email'),
+        firstName: z.string().min(1, 'First Name is required'),
+        lastName: z.string().min(1, 'Last Name is required'),
+        age: z.number().min(18, 'Please be over 18'),
+        birthdate: z.string().nonempty('Birthdate is required'),
+        isMarried: z.boolean(),
+        nationality: z.enum(['canada', 'us', 'india', 'brazil'], {
+            errorMap: () => ({ message: 'Please select a nationality' })
+        }),
+        password: z.string().min(8, 'Password must be at least 8 characters'),
+        confirmPassword: z.string()
+    })
+    .refine((data) => data.password === data.confirmPassword, {
+        message: 'Passwords do not match',
+        path: ['confirmPassword'],
+    })
 
 export default function RegisterForm() {
     const form = useForm({
@@ -27,6 +48,9 @@ export default function RegisterForm() {
             password: '',
             confirmPassword: '',
         } as RegisterFormValues,
+        validators: {
+            onChange: registerSchema
+        },
         onSubmit: ({ value }) => {
             console.log(value)
             alert(JSON.stringify(value, null, 2))
@@ -40,9 +64,7 @@ export default function RegisterForm() {
         }}>
             <h1>Register</h1>
 
-            <form.Field name='username' validators={{
-                onChange: ({ value }) => value.trim() === '' && 'Username is required'
-            }}>
+            <form.Field name='username'>
                 {(field) => (
                     <div>
                         <label htmlFor="username">Username:</label>
@@ -53,18 +75,13 @@ export default function RegisterForm() {
                             onChange={(e) => field.handleChange(e.target.value)}
                         />
                         {field.state.meta.errors.length > 0 && (
-                            <em>{field.state.meta.errors.join(', ')}</em>
+                            <em>{field.state.meta.errors.map(e => e?.message).join(', ')}</em>
                         )}
                     </div>
                 )}
             </form.Field>
 
-            <form.Field name='email' validators={{
-                onChange: ({ value }) => {
-                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-                    return !emailRegex.test(value) && 'Please enter a valid email'
-                }
-            }}>
+            <form.Field name='email'>
                 {(field) => (
                     <div>
                         <label htmlFor="email">Email:</label>
@@ -75,15 +92,13 @@ export default function RegisterForm() {
                             onChange={(e) => field.handleChange(e.target.value)}
                         />
                         {field.state.meta.errors.length > 0 && (
-                            <em>{field.state.meta.errors.join(', ')}</em>
+                            <em>{field.state.meta.errors.map(e => e?.message).join(', ')}</em>
                         )}
                     </div>
                 )}
             </form.Field>
 
-            <form.Field name='firstName' validators={{
-                onChange: ({ value }) => value.trim() === '' && 'First Name is required'
-            }}>
+            <form.Field name='firstName'>
                 {(field) => (
                     <div>
                         <label htmlFor="firstName">First Name:</label>
@@ -94,15 +109,13 @@ export default function RegisterForm() {
                             onChange={(e) => field.handleChange(e.target.value)}
                         />
                         {field.state.meta.errors.length > 0 && (
-                            <em>{field.state.meta.errors.join(', ')}</em>
+                            <em>{field.state.meta.errors.map(e => e?.message).join(', ')}</em>
                         )}
                     </div>
                 )}
             </form.Field>
 
-            <form.Field name='lastName' validators={{
-                onChange: ({ value }) => value.trim() === '' && 'Last Name is required'
-            }}>
+            <form.Field name='lastName'>
                 {(field) => (
                     <div>
                         <label htmlFor="lastName">Last Name:</label>
@@ -113,15 +126,13 @@ export default function RegisterForm() {
                             onChange={(e) => field.handleChange(e.target.value)}
                         />
                         {field.state.meta.errors.length > 0 && (
-                            <em>{field.state.meta.errors.join(', ')}</em>
+                            <em>{field.state.meta.errors.map(e => e?.message).join(', ')}</em>
                         )}
                     </div>
                 )}
             </form.Field>
 
-            <form.Field name='age' validators={{
-                onChange: ({ value }) => value < 18 && 'Please be over 18'
-            }}>
+            <form.Field name='age'>
                 {(field) => (
                     <div>
                         <label htmlFor="age">Age:</label>
@@ -132,15 +143,13 @@ export default function RegisterForm() {
                             onChange={(e) => field.handleChange(e.target.valueAsNumber)}
                         />
                         {field.state.meta.errors.length > 0 && (
-                            <em>{field.state.meta.errors.join(', ')}</em>
+                            <em>{field.state.meta.errors.map(e => e?.message).join(', ')}</em>
                         )}
                     </div>
                 )}
             </form.Field>
 
-            <form.Field name='birthdate' validators={{
-                onChange: ({ value }) => value === '' && 'Birthdate is required'
-            }}>
+            <form.Field name='birthdate'>
                 {(field) => (
                     <div>
                         <label htmlFor="birthdate">Birthdate:</label>
@@ -151,7 +160,7 @@ export default function RegisterForm() {
                             onChange={(e) => field.handleChange(e.target.value)}
                         />
                         {field.state.meta.errors.length > 0 && (
-                            <em>{field.state.meta.errors.join(', ')}</em>
+                            <em>{field.state.meta.errors.map(e => e?.message).join(', ')}</em>
                         )}
                     </div>
                 )}
@@ -171,9 +180,7 @@ export default function RegisterForm() {
                 )}
             </form.Field>
 
-            <form.Field name='nationality' validators={{
-                onChange: ({ value }) => value === '' && 'Please select a nationality'
-            }}>
+            <form.Field name='nationality'>
                 {(field) => (
                     <div>
                         <label htmlFor="nationality">Nationality:</label>
@@ -189,20 +196,13 @@ export default function RegisterForm() {
                             <option value='brazil'>Brazil</option>
                         </select>
                         {field.state.meta.errors.length > 0 && (
-                            <em>{field.state.meta.errors.join(', ')}</em>
+                            <em>{field.state.meta.errors.map(e => e?.message).join(', ')}</em>
                         )}
                     </div>
                 )}
             </form.Field>
 
-            <form.Field name='password' validators={{
-                onChange: ({ value }) => {
-                    return value.trim() === '' 
-                        ? 'Password can not be empty' 
-                        : value.trim().length < 8 
-                        && 'Password more than 8 characters'
-                }
-            }}>
+            <form.Field name='password'>
                 {(field) => (
                     <div>
                         <label htmlFor="password">Password:</label>
@@ -214,16 +214,13 @@ export default function RegisterForm() {
                             onChange={(e) => field.handleChange(e.target.value)}
                         />
                         {field.state.meta.errors.length > 0 && (
-                            <em>{field.state.meta.errors.join(', ')}</em>
+                            <em>{field.state.meta.errors.map(e => e?.message).join(', ')}</em>
                         )}
                     </div>
                 )}
             </form.Field>
 
-            <form.Field name='confirmPassword' validators={{
-                onChangeListenTo: ['password'],
-                onChange: ({ value, fieldApi }) => value.trim() !== fieldApi.form.getFieldValue('password') && 'Passwords do not match'
-            }}>
+            <form.Field name='confirmPassword'>
                 {(field) => (
                     <div>
                         <label htmlFor="confirmPassword">Confirm Password:</label>
@@ -235,7 +232,7 @@ export default function RegisterForm() {
                             onChange={(e) => field.handleChange(e.target.value)}
                         />
                         {field.state.meta.errors.length > 0 && (
-                            <em>{field.state.meta.errors.join(', ')}</em>
+                            <em>{field.state.meta.errors.map(e => e?.message).join(', ')}</em>
                         )}
                     </div>
                 )}

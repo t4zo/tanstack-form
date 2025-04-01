@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useForm } from '@tanstack/react-form'
 
 type RegisterFormValues = {
     username: string
@@ -14,161 +14,232 @@ type RegisterFormValues = {
 }
 
 export default function RegisterForm() {
-    const [formData, setFormData] = useState<RegisterFormValues>({
-        username: '',
-        email: '',
-        firstName: '',
-        lastName: '',
-        age: 0,
-        birthdate: '',
-        isMarried: false,
-        nationality: 'brazil',
-        password: '',
-        confirmPassword: '',
+    const form = useForm({
+        defaultValues: {
+            username: '',
+            email: '',
+            firstName: '',
+            lastName: '',
+            age: 0,
+            birthdate: '',
+            isMarried: false,
+            nationality: 'canada',
+            password: '',
+            confirmPassword: '',
+        } as RegisterFormValues,
+        onSubmit: ({ value }) => {
+            console.log(value)
+            alert(JSON.stringify(value, null, 2))
+        }
     })
 
-    function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) {
-        const { name, type, value } = e.target
-        const newValue = type === 'checkbox' ? (e.target as HTMLInputElement).checked : value
-        setFormData(((prev) => ({
-            ...prev,
-            [name]: newValue
-        })))
-    }
-
-    function handleSubmit(e: React.FormEvent) {
-        e.preventDefault()
-        console.log(formData)
-        alert(JSON.stringify(formData, null, 2))
-    }
-
     return (
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={(e) => {
+            e.preventDefault()
+            form.handleSubmit()
+        }}>
             <h1>Register</h1>
 
-            {/* Username */}
-            <div>
-                <label htmlFor="username">Username:</label>
-                <input 
-                    type="text"
-                    id='username'
-                    name='username'
-                    value={formData.username}
-                    onChange={handleChange}
-                />
-            </div>
+            <form.Field name='username' validators={{
+                onChange: ({ value }) => value.trim() === '' && 'Username is required'
+            }}>
+                {(field) => (
+                    <div>
+                        <label htmlFor="username">Username:</label>
+                        <input
+                            type="text"
+                            id='username'
+                            value={field.state.value}
+                            onChange={(e) => field.handleChange(e.target.value)}
+                        />
+                        {field.state.meta.errors.length > 0 && (
+                            <em>{field.state.meta.errors.join(', ')}</em>
+                        )}
+                    </div>
+                )}
+            </form.Field>
 
-            {/* Email */}
-            <div>
-                <label htmlFor="email">Email:</label>
-                <input 
-                    type="email"
-                    id='email'
-                    name='email'
-                    value={formData.email}
-                    onChange={handleChange}
-                />
-            </div>
+            <form.Field name='email' validators={{
+                onChange: ({ value }) => {
+                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+                    return !emailRegex.test(value) && 'Please enter a valid email'
+                }
+            }}>
+                {(field) => (
+                    <div>
+                        <label htmlFor="email">Email:</label>
+                        <input
+                            type="email"
+                            id='email'
+                            value={field.state.value}
+                            onChange={(e) => field.handleChange(e.target.value)}
+                        />
+                        {field.state.meta.errors.length > 0 && (
+                            <em>{field.state.meta.errors.join(', ')}</em>
+                        )}
+                    </div>
+                )}
+            </form.Field>
 
-            {/* First Name */}
-            <div>
-                <label htmlFor="firstName">First Name:</label>
-                <input 
-                    type="text"
-                    id='firstName'
-                    name='firstName'
-                    value={formData.firstName}
-                    onChange={handleChange}
-                />
-            </div>
+            <form.Field name='firstName' validators={{
+                onChange: ({ value }) => value.trim() === '' && 'First Name is required'
+            }}>
+                {(field) => (
+                    <div>
+                        <label htmlFor="firstName">First Name:</label>
+                        <input
+                            type="text"
+                            id='firstName'
+                            value={field.state.value}
+                            onChange={(e) => field.handleChange(e.target.value)}
+                        />
+                        {field.state.meta.errors.length > 0 && (
+                            <em>{field.state.meta.errors.join(', ')}</em>
+                        )}
+                    </div>
+                )}
+            </form.Field>
 
-            {/* Last Name */}
-            <div>
-                <label htmlFor="lastName">Last Name:</label>
-                <input 
-                    type="text"
-                    id='lastName'
-                    name='lastName'
-                    value={formData.lastName}
-                    onChange={handleChange}
-                />
-            </div>
+            <form.Field name='lastName' validators={{
+                onChange: ({ value }) => value.trim() === '' && 'Last Name is required'
+            }}>
+                {(field) => (
+                    <div>
+                        <label htmlFor="lastName">Last Name:</label>
+                        <input
+                            type="text"
+                            id='lastName'
+                            value={field.state.value}
+                            onChange={(e) => field.handleChange(e.target.value)}
+                        />
+                        {field.state.meta.errors.length > 0 && (
+                            <em>{field.state.meta.errors.join(', ')}</em>
+                        )}
+                    </div>
+                )}
+            </form.Field>
 
-            {/* Age */}
-            <div>
-                <label htmlFor="age">Age:</label>
-                <input 
-                    type="number"
-                    id='age'
-                    name='age'
-                    value={formData.age}
-                    onChange={handleChange}
-                />
-            </div>
+            <form.Field name='age' validators={{
+                onChange: ({ value }) => value < 18 && 'Please be over 18'
+            }}>
+                {(field) => (
+                    <div>
+                        <label htmlFor="age">Age:</label>
+                        <input
+                            type="number"
+                            id='age'
+                            value={field.state.value}
+                            onChange={(e) => field.handleChange(e.target.valueAsNumber)}
+                        />
+                        {field.state.meta.errors.length > 0 && (
+                            <em>{field.state.meta.errors.join(', ')}</em>
+                        )}
+                    </div>
+                )}
+            </form.Field>
 
-            {/* Birthdate */}
-            <div>
-                <label htmlFor="birthdate">Birthdate:</label>
-                <input 
-                    type="date"
-                    id='birthdate'
-                    name='birthdate'
-                    value={formData.birthdate}
-                    onChange={handleChange}
-                />
-            </div>
+            <form.Field name='birthdate' validators={{
+                onChange: ({ value }) => value === '' && 'Birthdate is required'
+            }}>
+                {(field) => (
+                    <div>
+                        <label htmlFor="birthdate">Birthdate:</label>
+                        <input
+                            type="date"
+                            id='birthdate'
+                            value={field.state.value}
+                            onChange={(e) => field.handleChange(e.target.value)}
+                        />
+                        {field.state.meta.errors.length > 0 && (
+                            <em>{field.state.meta.errors.join(', ')}</em>
+                        )}
+                    </div>
+                )}
+            </form.Field>
 
-            {/* Is Married */}
-            <div>
-                <label htmlFor="isMarried">Are you married:</label>
-                <input 
-                    type="checkbox"
-                    id='isMarried'
-                    name='isMarried'
-                    checked={formData.isMarried}
-                    onChange={handleChange}
-                />
-            </div>
+            <form.Field name='isMarried'>
+                {(field) => (
+                    <div>
+                        <label htmlFor="isMarried">Are you married:</label>
+                        <input
+                            type="checkbox"
+                            id='isMarried'
+                            checked={field.state.value}
+                            onChange={(e) => field.handleChange(e.target.checked)}
+                        />
+                    </div>
+                )}
+            </form.Field>
 
-            {/* Nationality */}
-            <div>
-                <label htmlFor="nationality">Nationality:</label>
-                <select 
-                    id='nationality'
-                    name='nationality'
-                    value={formData.nationality}
-                    onChange={handleChange}
-                >
-                    <option value='canada'>Canada</option>
-                    <option value='us'>US</option>
-                    <option value='india'>India</option>
-                    <option value='brazil'>Brazil</option>
-                </select>
-            </div>
+            <form.Field name='nationality' validators={{
+                onChange: ({ value }) => value === '' && 'Please select a nationality'
+            }}>
+                {(field) => (
+                    <div>
+                        <label htmlFor="nationality">Nationality:</label>
+                        <select
+                            id='nationality'
+                            name='nationality'
+                            value={field.state.value}
+                            onChange={(e) => field.handleChange(e.target.value)}
+                        >
+                            <option value='canada'>Canada</option>
+                            <option value='us'>US</option>
+                            <option value='in'>India</option>
+                            <option value='brazil'>Brazil</option>
+                        </select>
+                        {field.state.meta.errors.length > 0 && (
+                            <em>{field.state.meta.errors.join(', ')}</em>
+                        )}
+                    </div>
+                )}
+            </form.Field>
 
-            {/* Password */}
-            <div>
-                <label htmlFor="password">Password:</label>
-                <input 
-                    type="password"
-                    id='password'
-                    name='password'
-                    value={formData.password}
-                    onChange={handleChange}
-                />
-            </div>
+            <form.Field name='password' validators={{
+                onChange: ({ value }) => {
+                    return value.trim() === '' 
+                        ? 'Password can not be empty' 
+                        : value.trim().length < 8 
+                        && 'Password more than 8 characters'
+                }
+            }}>
+                {(field) => (
+                    <div>
+                        <label htmlFor="password">Password:</label>
+                        <input
+                            type="password"
+                            id='password'
+                            name='password'
+                            value={field.state.value}
+                            onChange={(e) => field.handleChange(e.target.value)}
+                        />
+                        {field.state.meta.errors.length > 0 && (
+                            <em>{field.state.meta.errors.join(', ')}</em>
+                        )}
+                    </div>
+                )}
+            </form.Field>
 
-            {/* Confirm Password */}
-            <div>
-                <label htmlFor="confirmPassword">Confirm Password:</label>
-                <input 
-                    type="password"
-                    id='confirmPassword'
-                    name='confirmPassword'
-                    value={formData.confirmPassword}
-                    onChange={handleChange}
-                />
-            </div>
+            <form.Field name='confirmPassword' validators={{
+                onChangeListenTo: ['password'],
+                onChange: ({ value, fieldApi }) => value.trim() !== fieldApi.form.getFieldValue('password') && 'Passwords do not match'
+            }}>
+                {(field) => (
+                    <div>
+                        <label htmlFor="confirmPassword">Confirm Password:</label>
+                        <input
+                            type="password"
+                            id='confirmPassword'
+                            name='confirmPassword'
+                            value={field.state.value}
+                            onChange={(e) => field.handleChange(e.target.value)}
+                        />
+                        {field.state.meta.errors.length > 0 && (
+                            <em>{field.state.meta.errors.join(', ')}</em>
+                        )}
+                    </div>
+                )}
+            </form.Field>
 
             <button type='submit'>Submit</button>
         </form>
